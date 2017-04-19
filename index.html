@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" media="screen" charset="utf-8">
+    <link rel="stylesheet" href="css/animate.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.4/lodash.js"></script>
+    <title>Gem iT 2.0</title>
+  </head>
+
+  <body>
+    <div class="container">
+    <div class="row">
+      <div class="col-sm-2"><br><br>
+        <button type="button" class="btn btn-primary btn-lg">Start!</button>
+        <div class="scoreboard">
+          <br>POiNTS
+        </div>
+        <div class="score">
+          000000
+        </div>
+        <div class="timerboard">
+          <br>TiMER
+        </div>
+        <div class="timer">
+          00:00
+        </div>
+        <div class="timer_description">
+          <br>Break as many gems as possible before time runs out!
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <div class="header"> G E M - i T !</div>
+        <div class="gameboard">
+
+          <div class="row grid8 row-no-padding">
+            <div class="col-md-1" id="col1">
+                test
+            </div>
+            <div class="col-md-1" id="col2">
+                test
+            </div>
+            <div class="col-md-1" id="col3">
+                test
+            </div>
+            <div class="col-md-1" id="col4">
+                test
+            </div>
+            <div class="col-md-1" id="col5">
+                test
+            </div>
+            <div class="col-md-1" id="col6">
+                test
+            </div>
+            <div class="col-md-1" id="col7">
+                test
+            </div>
+            <div class="col-md-1" id="col8">
+                test
+            </div>
+        </div>
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="hintsboard">
+          HiNTS
+        </div>
+        <div class="hints">
+          <br> <img class="img_hint" src="./images/black_gem_circle.png" alt=""> <br> <strong> Click: </strong> -5000 Points <br> <strong> Match 3: </strong> Gameover<br>
+          <br> <img class="img_hint" src="./images/blue_bomb.png" alt=""> <br> Match same color to break all gems of same color<br>
+          <br> <img class="img_hint" src="./images/red_gem_bonus.png" alt=""> <br> Match same color for:<br> +5000 points &amp <br>+10 seconds
+        </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+
+  </body>
+
+  <script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+    <script type="text/javascript" src="./js/gems.js"></script>
+    <script type="text/javascript" src="./js/game.js"></script>
+
+</html>
