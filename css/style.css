@@ -49,6 +49,7 @@ body {
 }
 
 .gameboard {
+  position: relative;
   padding-top: 15px;
   padding-bottom: 5px;
   padding-left: 25px;
@@ -157,4 +158,20 @@ body {
 .redColor {
   color: red;
   font-weight: 500;
+}
+
+.gameover {
+  display: block;
+  position: absolute;
+  margin-top: -350px;
+  width: 560px;
+  min-height: 100px;
+  background-color: rgba(218, 216, 189,0.8);
+  text-align: center;
+  border: 3px solid rgb(154, 154, 140);
+  border-radius: 10px;
+  letter-spacing: 5px;
+  font-size: 40px;
+  z-index: 500;
+  box-shadow: 3px 3px 3px gray;
 }

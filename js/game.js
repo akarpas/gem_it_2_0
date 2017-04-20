@@ -194,7 +194,9 @@ Game.prototype.checkForMatch = function () {
   for (var row = 0; row<this.rows; row++){
       for (var column = 0; column<this.columns; column++){
         this.checkMatchHorizontally(row,column);
+        $(".score").text(this.score);
         this.checkMatchVertically(row,column);
+        $(".score").text(this.score);
       }
   }
 };
@@ -221,9 +223,12 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       matchCounter++;
       gemsForRemoval = [];
       gemsForRemoval.push($('#'+currentID).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
       for (hIndex; hIndex < this.columns; hIndex++) {
         if ($('#'.currentID).children().attr('id') == $('#'+row+'-'+(column+hIndex)).children().attr('id')) {
           gemsForRemoval.push($('#'+row+'-'+(column+hIndex)).attr('id'));
+          subScore += Number(($('#'+row+'-'+(column+hIndex)).children().attr('data-score')));
+          console.log("subscore " + subScore);
           matchCounter++;
         } else {
           return;
@@ -231,25 +236,30 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       }
     }
     if (matchCounter >= 3) {
-      matchCounter = 0;
+
       this.match = true;
+      totalScore += (Math.ceil(matchCounter / 3))*subScore;
+      this.score += totalScore;
+      console.log("score: " + totalScore);
+      matchCounter = 0;
       this.removeGemsHorizontally(gemsForRemoval,row);
-      totalScore = (Math.ceil(matchCounter / 3))*totalScore;
-      // console.log("IF1 this is a test for gems to be removed: " + gemsForRemoval);
+
     }
 
 
   } else if (column === this.columns-1) {
-
     if ($('#'+ currentID).children().attr('id') != $('#'+row+'-'+(column-1)).children().attr('id')) {
       return;
     } else {
       matchCounter++;
       gemsForRemoval = [];
       gemsForRemoval.push($('#'+currentID).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
       for (hIndex; hIndex < this.columns; hIndex++) {
         if ($('#'.currentID).children().attr('id') == $('#'+row+'-'+(column-hIndex)).children().attr('id')) {
           gemsForRemoval.push($('#'+row+'-'+(column-hIndex)).attr('id'));
+          subScore += Number(($('#'+row+'-'+(column-hIndex)).children().attr('data-score')));
+          console.log("subscore " + subScore);
           matchCounter++;
         } else {
           break;
@@ -257,12 +267,16 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       }
     }
     if (matchCounter >= 3) {
-      matchCounter = 0;
-      this.match = true;
-      this.removeGemsHorizontally(gemsForRemoval,row);
-      // console.log("IF2 this is a test for gems to be removed: " + gemsForRemoval);
-    }
 
+      this.match = true;
+      totalScore += (Math.ceil(matchCounter / 3))*subScore;
+      this.score += totalScore;
+      console.log("score: " + totalScore);
+      matchCounter = 0;
+      this.removeGemsHorizontally(gemsForRemoval,row);
+    }
+    subScore = 0;
+    totalScore = 0;
 
   } else {
 
@@ -276,6 +290,10 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       gemsForRemoval.push($('#'+currentID).attr('id'));
       gemsForRemoval.push($('#'+row+'-'+(column-hIndex)).attr('id'));
       gemsForRemoval.push($('#'+row+'-'+(column+hIndex)).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
+      subScore += Number(($('#'+row+'-'+(column-hIndex)).children().attr('data-score')));
+      subScore += Number(($('#'+row+'-'+(column+hIndex)).children().attr('data-score')));
+      console.log("subscore " + subScore);
       matchCounter=3;
       hIndex=2;
       // ISSUE IS BECAUSE WE JUMP OVER TO NEXT GEM
@@ -292,6 +310,7 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
           if ($('#'+ currentID).children().attr('id') === $('#'+row+'-'+(column+hIndex)).children().attr('id')) {
             matchCounter++;
             gemsForRemoval.push($('#'+row+'-'+(column+hIndex)).attr('id'));
+            subScore += Number(($('#'+row+'-'+(column+hIndex)).children().attr('data-score')));
           } else {
             break;
           }
@@ -301,21 +320,28 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
 
         console.log("IF3 this is a test for gems to be removed: " + gemsForRemoval);
         this.match = true;
+        totalScore += (Math.ceil(matchCounter / 3))*subScore;
+        this.score += totalScore;
         this.removeGemsHorizontally(gemsForRemoval,row);
         matchCounter = 0;
       }
+    subScore = 0;
+    totalScore = 0;
     }
 
     if ($('#'+ currentID).children().attr('id') === $('#'+row+'-'+(column-hIndex)).children().attr('id') &&
           $('#'+ currentID).children().attr('id') !== $('#'+row+'-'+(column+hIndex)).children().attr('id')) {
       gemsForRemoval.push($('#'+currentID).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
       matchCounter = 2;
       gemsForRemoval.push($('#'+row+'-'+(column-hIndex)).attr('id'));
+      subScore += Number(($('#'+row+'-'+(column-hIndex)).children().attr('data-score')));
       hIndex++;
       for (hIndex; hIndex < (this.columns); hIndex++) {
           if ($('#'+ currentID).children().attr('id') === $('#'+row+'-'+(column-hIndex)).children().attr('id')) {
             matchCounter++;
             gemsForRemoval.push($('#'+row+'-'+(column-hIndex)).attr('id'));
+            subScore += Number(($('#'+row+'-'+(column-hIndex)).children().attr('data-score')));
           } else {
             return;
           }
@@ -324,6 +350,8 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       if (matchCounter >= 3) {
         this.removeGemsHorizontally(gemsForRemoval,row);
         this.match = true;
+        totalScore += (Math.ceil(matchCounter / 3))*subScore;
+        this.score += totalScore;
         matchCounter = 0;
       }
     }
@@ -332,24 +360,29 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
           $('#'+ currentID).children().attr('id') === $('#'+row+'-'+(column+hIndex)).children().attr('id')) {
       matchCounter = 2;
       gemsForRemoval.push($('#'+currentID).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
       gemsForRemoval.push($('#'+row+'-'+(column+hIndex)).attr('id'));
+      subScore += Number(($('#'+row+'-'+(column+hIndex)).children().attr('data-score')));
       hIndex++;
       for (hIndex; hIndex < (this.columns); hIndex++) {
         if ($('#'+ currentID).children().attr('id') === $('#'+row+'-'+(column-hIndex)).children().attr('id')) {
           matchCounter++;
           gemsForRemoval.push($('#'+row+'-'+(column+hIndex)).attr('id'));
+          subScore += Number(($('#'+row+'-'+(column+hIndex)).children().attr('data-score')));
         } else {
           return;
         }
       }
       if (matchCounter >= 3) {
         totalScore = tmpScore;
-        totalScore = (Math.ceil(matchCounter / 3))*totalScore;
+        totalScore = (Math.ceil(matchCounter / 3))*subScore;
         this.match = true;
         this.removeGemsHorizontally(gemsForRemoval,row);
         matchCounter = 0;
 
       }
+      subScore = 0;
+      totalScore = 0;
     }
 };
 
@@ -357,7 +390,7 @@ Game.prototype.checkMatchVertically = function (row,column) {
 
   var that = this;
   var totalScore = 0;
-  var tmpScore = 0;
+  var subScore = 0;
   var matchCounter = 1;
   var vIndex = 1;
   var gemsForRemoval = [];
@@ -374,9 +407,11 @@ Game.prototype.checkMatchVertically = function (row,column) {
       matchCounter++;
       gemsForRemoval = [];
       gemsForRemoval.push($('#'+currentID).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
       for (vIndex; vIndex < this.rows; vIndex++) {
         if ($('#'.currentID).children().attr('id') == $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
           gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+          subScore += Number(($('#'+(row+vIndex)+'-'+(column)).children().attr('data-score')));
           matchCounter++;
         } else {
           return;
@@ -386,10 +421,13 @@ Game.prototype.checkMatchVertically = function (row,column) {
     if (matchCounter >= 3) {
       matchCounter = 0;
       this.match = true;
+      totalScore = (Math.ceil(matchCounter / 3))*subScore;
+      this.score += totalScore;
       this.removeGemsVertically(gemsForRemoval,column);
       console.log("IF1 this is a test for gems to be removed: " + gemsForRemoval);
     }
-
+    subScore = 0;
+    totalScore = 0;
 
   } else if (row === this.rows-1) {
 
@@ -399,9 +437,13 @@ Game.prototype.checkMatchVertically = function (row,column) {
       matchCounter++;
       gemsForRemoval = [];
       gemsForRemoval.push($('#'+currentID).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
+      gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+      subScore += Number(($('#'+(row+vIndex)+'-'+(column)).children().attr('data-score')));
       for (vIndex; vIndex < this.rows; vIndex++) {
         if ($('#'.currentID).children().attr('id') == $('#'+(row-vIndex)+'-'+(column)).children().attr('id')) {
           gemsForRemoval.push($('#'+(row-vIndex)+'-'+(column)).attr('id'));
+          subScore += Number(($('#'+(row-vIndex)+'-'+(column)).children().attr('data-score')));
           matchCounter++;
         } else {
           break;
@@ -411,10 +453,13 @@ Game.prototype.checkMatchVertically = function (row,column) {
     if (matchCounter >= 3) {
       matchCounter = 0;
       this.match = true;
+      totalScore = (Math.ceil(matchCounter / 3))*subScore;
+      this.score += totalScore;
       this.removeGemsVertically(gemsForRemoval,column);
       console.log("IF2 this is a test for gems to be removed: " + gemsForRemoval);
     }
-
+    subScore = 0;
+    totalScore = 0;
 
   } else {
 
@@ -426,15 +471,19 @@ Game.prototype.checkMatchVertically = function (row,column) {
     if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id') &&
           $('#'+ currentID).children().attr('id') === $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
       gemsForRemoval.push($('#'+currentID).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
       gemsForRemoval.push($('#'+(row-vIndex)+'-'+(column)).attr('id'));
+      subScore += Number(($('#'+(row-vIndex)+'-'+(column)).children().attr('data-score')));
       gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+      subScore += Number(($('#'+(row+vIndex)+'-'+(column)).children().attr('data-score')));
       matchCounter=3;
       vIndex=2;
       // ISSUE IS BECAUSE WE JUMP OVER TO NEXT GEM
         for (vIndex; vIndex < this.rows; vIndex++) {
           if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id')) {
             matchCounter++;
-            gemsForRemoval.push($('#'+(row=-vIndex)+'-'+(column)).attr('id'));
+            gemsForRemoval.push($('#'+(row-vIndex)+'-'+(column)).attr('id'));
+            subScore += Number(($('#'+(row-vIndex)+'-'+(column)).children().attr('data-score')));
           } else {
             break;
           }
@@ -444,6 +493,7 @@ Game.prototype.checkMatchVertically = function (row,column) {
           if ($('#'+ currentID).children().attr('id') === $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
             matchCounter++;
             gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+            subScore += Number(($('#'+(row+vIndex)+'-'+(column)).children().attr('data-score')));
           } else {
             break;
           }
@@ -453,7 +503,9 @@ Game.prototype.checkMatchVertically = function (row,column) {
 
         console.log("IF3 this is a test for gems to be removed: " + gemsForRemoval);
         this.match = true;
-      this.removeGemsVertically(gemsForRemoval,column);
+        totalScore = (Math.ceil(matchCounter / 3))*subScore;
+        this.score += totalScore;
+        this.removeGemsVertically(gemsForRemoval,column);
         matchCounter = 0;
       }
     }
@@ -461,13 +513,16 @@ Game.prototype.checkMatchVertically = function (row,column) {
     if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id') &&
           $('#'+ currentID).children().attr('id') !== $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
       gemsForRemoval.push($('#'+currentID).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
       matchCounter = 2;
       gemsForRemoval.push($('#'+(row-vIndex)+'-'+(column)).attr('id'));
+      subScore += Number(($('#'+(row-vIndex)+'-'+(column)).children().attr('data-score')));
       vIndex++;
       for (vIndex; vIndex < (this.rows-1); vIndex++) {
           if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id')) {
             matchCounter++;
             gemsForRemoval.push($('#'+(row-vIndex)+'-'+(column)).attr('id'));
+            subScore += Number(($('#'+(row-vIndex)+'-'+(column)).children().attr('data-score')));
           } else {
             return;
           }
@@ -476,6 +531,8 @@ Game.prototype.checkMatchVertically = function (row,column) {
       if (matchCounter >= 3) {
         this.removeGemsVertically(gemsForRemoval,column);
         this.match = true;
+        totalScore += (Math.ceil(matchCounter / 3))*subScore;
+        this.score += totalScore;
         matchCounter = 0;
       }
     }
@@ -484,25 +541,32 @@ Game.prototype.checkMatchVertically = function (row,column) {
           $('#'+ currentID).children().attr('id') === $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
       matchCounter = 2;
       gemsForRemoval.push($('#'+currentID).attr('id'));
+      subScore += Number(($('#'+currentID).children().attr('data-score')));
       gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+      subScore += Number(($('#'+(row+vIndex)+'-'+(column)).children().attr('data-score')));
       vIndex++;
       for (vIndex; vIndex < (this.rows-1); vIndex++) {
         if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id')) {
           matchCounter++;
           gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+          subScore += Number(($('#'+(row+vIndex)+'-'+(column)).children().attr('data-score')));
         } else {
           return;
         }
       }
       if (matchCounter >= 3) {
-        // totalScore = tmpScore;
-        // totalScore = (Math.ceil(matchCounter / 3))*totalScore;
         this.match = true;
+        totalScore += (Math.ceil(matchCounter / 3))*subScore;
+        this.score += totalScore;
         this.removeGemsVertically(gemsForRemoval,column);
         matchCounter = 0;
 
       }
+      subScore = 0;
+      totalScore = 0;
     }
+    subScore = 0;
+    totalScore = 0;
 };
 
 Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
@@ -682,6 +746,7 @@ $(document).ready(function() {
   $("#start").fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400).fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
   $("#start").on("click",function() {
     $('.gems').css('opacity','1').css('filter', '');
+    $('.gameover').remove();
     var time = 99;
     var timer = setInterval(function() {
       time -= 1;
@@ -693,7 +758,9 @@ $(document).ready(function() {
       if (time === 0) {
         clearInterval(timer);
         $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
-        game.eventListener().off();
+        $('.col-md-1').off('click');
+        $('.gameboard').append("<div class='gameover'><strong>Game Over!</strong><br> Your Final Score:<br> <div id=\"finalscore\">0</div></div>");
+        $('#finalscore').text(game.score);
       }
     },1000);
     game.eventListener();
