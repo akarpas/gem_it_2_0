@@ -11,6 +11,7 @@ function Game(options) {
   this.clickCounter = 0;
   this.selectedCell = 0;
   this.match = false;
+  this.secondGem = 0;
   // var mapGrid = [];
   // _.times(this.rows,function() {
   //   mapGrid.push(_.fill(new Array(this.columns),0));
@@ -152,7 +153,7 @@ Game.prototype.createRandomGems = function () {
       if (this.columnIndex === 0 || 2 || 4 || 6) {
         if (this.rowIndex === 0 || this.rowIndex === 2 || this.rowIndex === 5) {
           selection = _.sample(['red','redP','redB','blue','blueP','blueB','gray','gray','gray','black']);
-          if (selection === "black" && this.gems.blackCounter > 2) {
+          if (selection === "black" && this.gems.blackCounter > 1) {
             selection = _.sample(['red','redP','redB','blue','blueP','blueB','gray','gray']);
           }
           }
@@ -160,7 +161,7 @@ Game.prototype.createRandomGems = function () {
       if (this.columnIndex === 1 || 3 || 5 || 7) {
         if (this.rowIndex === 1 || this.rowIndex === 3) {
           selection = _.sample(['green','greenB', 'greenP','purple','purple','black']);
-          if (selection === "black" && this.gems.blackCounter > 2) {
+          if (selection === "black" && this.gems.blackCounter > 1) {
             selection = _.sample(['green','purple','purple']);
           }
         }
@@ -192,7 +193,7 @@ Game.prototype.checkForMatch = function () {
   for (var row = 0; row<this.rows; row++){
       for (var column = 0; column<this.columns; column++){
         this.checkMatchHorizontally(row,column);
-        // this.checkMatchVertically(row,column);
+        this.checkMatchVertically(row,column);
       }
   }
 };
@@ -296,9 +297,9 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
     }
       if (matchCounter >= 3) {
 
-        // console.log("IF3 this is a test for gems to be removed: " + gemsForRemoval);
+        console.log("IF3 this is a test for gems to be removed: " + gemsForRemoval);
         this.match = true;
-      this.removeGemsHorizontally(gemsForRemoval,row);
+        this.removeGemsHorizontally(gemsForRemoval,row);
         matchCounter = 0;
       }
     }
@@ -309,7 +310,7 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       matchCounter = 2;
       gemsForRemoval.push($('#'+row+'-'+(column-hIndex)).attr('id'));
       hIndex++;
-      for (hIndex; hIndex < (this.columns-1); hIndex++) {
+      for (hIndex; hIndex < (this.columns); hIndex++) {
           if ($('#'+ currentID).children().attr('id') === $('#'+row+'-'+(column-hIndex)).children().attr('id')) {
             matchCounter++;
             gemsForRemoval.push($('#'+row+'-'+(column-hIndex)).attr('id'));
@@ -331,7 +332,7 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       gemsForRemoval.push($('#'+currentID).attr('id'));
       gemsForRemoval.push($('#'+row+'-'+(column+hIndex)).attr('id'));
       hIndex++;
-      for (hIndex; hIndex < (this.columns-1); hIndex++) {
+      for (hIndex; hIndex < (this.columns); hIndex++) {
         if ($('#'+ currentID).children().attr('id') === $('#'+row+'-'+(column-hIndex)).children().attr('id')) {
           matchCounter++;
           gemsForRemoval.push($('#'+row+'-'+(column+hIndex)).attr('id'));
@@ -342,8 +343,160 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       if (matchCounter >= 3) {
         totalScore = tmpScore;
         totalScore = (Math.ceil(matchCounter / 3))*totalScore;
-        this.match = true;      
+        this.match = true;
         this.removeGemsHorizontally(gemsForRemoval,row);
+        matchCounter = 0;
+
+      }
+    }
+};
+
+Game.prototype.checkMatchVertically = function (row,column) {
+
+  var that = this;
+  var totalScore = 0;
+  var tmpScore = 0;
+  var matchCounter = 1;
+  var vIndex = 1;
+  var gemsForRemoval = [];
+  var counter = 0;
+  var currentID;
+
+  currentID = row + "-" + column;
+
+  if (row === 0) {
+
+    if ($('#'+ currentID).children().attr('id') != $('#'+(row+1)+'-'+(column)).children().attr('id')) {
+      return;
+    } else {
+      matchCounter++;
+      gemsForRemoval = [];
+      gemsForRemoval.push($('#'+currentID).attr('id'));
+      for (vIndex; vIndex < this.rows; vIndex++) {
+        if ($('#'.currentID).children().attr('id') == $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
+          gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+          matchCounter++;
+        } else {
+          return;
+        }
+      }
+    }
+    if (matchCounter >= 3) {
+      matchCounter = 0;
+      this.match = true;
+      this.removeGemsVertically(gemsForRemoval,column);
+      console.log("IF1 this is a test for gems to be removed: " + gemsForRemoval);
+    }
+
+
+  } else if (row === this.rows-1) {
+
+    if ($('#'+ currentID).children().attr('id') != $('#'+(row-vIndex)+'-'+(column)).children().attr('id')) {
+      return;
+    } else {
+      matchCounter++;
+      gemsForRemoval = [];
+      gemsForRemoval.push($('#'+currentID).attr('id'));
+      for (vIndex; vIndex < this.rows; vIndex++) {
+        if ($('#'.currentID).children().attr('id') == $('#'+(row-vIndex)+'-'+(column)).children().attr('id')) {
+          gemsForRemoval.push($('#'+(row-vIndex)+'-'+(column)).attr('id'));
+          matchCounter++;
+        } else {
+          break;
+        }
+      }
+    }
+    if (matchCounter >= 3) {
+      matchCounter = 0;
+      this.match = true;
+      this.removeGemsVertically(gemsForRemoval,column);
+      console.log("IF2 this is a test for gems to be removed: " + gemsForRemoval);
+    }
+
+
+  } else {
+
+    if ($('#'+ currentID).children().attr('id') !== $('#'+(row-vIndex)+'-'+(column)).children().attr('id') &&
+          $('#'+ currentID).children().attr('id') !== $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
+      return;
+    }
+
+    if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id') &&
+          $('#'+ currentID).children().attr('id') === $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
+      gemsForRemoval.push($('#'+currentID).attr('id'));
+      gemsForRemoval.push($('#'+(row-vIndex)+'-'+(column)).attr('id'));
+      gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+      matchCounter=3;
+      vIndex=2;
+      // ISSUE IS BECAUSE WE JUMP OVER TO NEXT GEM
+        for (vIndex; vIndex < this.rows; vIndex++) {
+          if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id')) {
+            matchCounter++;
+            gemsForRemoval.push($('#'+(row=-vIndex)+'-'+(column)).attr('id'));
+          } else {
+            break;
+          }
+      }
+      vIndex=2;
+      for (vIndex; vIndex < this.rows; vIndex++) {
+          if ($('#'+ currentID).children().attr('id') === $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
+            matchCounter++;
+            gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+          } else {
+            break;
+          }
+      }
+    }
+      if (matchCounter >= 3) {
+
+        console.log("IF3 this is a test for gems to be removed: " + gemsForRemoval);
+        this.match = true;
+      this.removeGemsVertically(gemsForRemoval,column);
+        matchCounter = 0;
+      }
+    }
+
+    if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id') &&
+          $('#'+ currentID).children().attr('id') !== $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
+      gemsForRemoval.push($('#'+currentID).attr('id'));
+      matchCounter = 2;
+      gemsForRemoval.push($('#'+(row-vIndex)+'-'+(column)).attr('id'));
+      vIndex++;
+      for (vIndex; vIndex < (this.rows-1); vIndex++) {
+          if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id')) {
+            matchCounter++;
+            gemsForRemoval.push($('#'+(row-vIndex)+'-'+(column)).attr('id'));
+          } else {
+            return;
+          }
+
+      }
+      if (matchCounter >= 3) {
+        this.removeGemsVertically(gemsForRemoval,column);
+        this.match = true;
+        matchCounter = 0;
+      }
+    }
+
+    if ($('#'+ currentID).children().attr('id') !== $('#'+(row-vIndex)+'-'+(column)).children().attr('id') &&
+          $('#'+ currentID).children().attr('id') === $('#'+(row+vIndex)+'-'+(column)).children().attr('id')) {
+      matchCounter = 2;
+      gemsForRemoval.push($('#'+currentID).attr('id'));
+      gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+      vIndex++;
+      for (vIndex; vIndex < (this.rows-1); vIndex++) {
+        if ($('#'+ currentID).children().attr('id') === $('#'+(row-vIndex)+'-'+(column)).children().attr('id')) {
+          matchCounter++;
+          gemsForRemoval.push($('#'+(row+vIndex)+'-'+(column)).attr('id'));
+        } else {
+          return;
+        }
+      }
+      if (matchCounter >= 3) {
+        // totalScore = tmpScore;
+        // totalScore = (Math.ceil(matchCounter / 3))*totalScore;
+        this.match = true;
+        this.removeGemsVertically(gemsForRemoval,column);
         matchCounter = 0;
 
       }
@@ -358,18 +511,36 @@ Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
   var arrayMemory = [];
   var arrayKeep = [];
   var tmpScore = 0;
-  for (rowMark; rowMark > 0; rowMark--) {
+  for (rowMark; rowMark > -1; rowMark--) {
     for (removalIndex; removalIndex<gemsForRemoval.length; removalIndex++) {
       temp = gemsForRemoval[removalIndex];
       $('#'+temp).remove();
       this.addGems();
-
     }
-
   }
   this.updateID();
-
 };
+
+Game.prototype.removeGemsVertically = function (gemsForRemoval,columnMark) {
+
+  var removalIndex = 0;
+  var p1, p2;
+  var temp;
+  var sorted = [];
+  var tmpScore = 0;
+
+  gemsForRemoval.sort();
+
+  for (columnMark; columnMark > -1; columnMark--) {
+    for (removalIndex; removalIndex<gemsForRemoval.length; removalIndex++) {
+      temp = gemsForRemoval[removalIndex];
+      $('#'+temp).remove();
+      this.addGems();
+    }
+  }
+  this.updateID();
+};
+
 
 Game.prototype.addGems = function () {
 
@@ -381,7 +552,7 @@ Game.prototype.addGems = function () {
       gemCounter++;
     });
     if (gemCounter < that.rows) {
-      var selection = _.sample(['red','redP','redB','blue','blueP','blueB','gray','gray','gray','black']);
+      var selection = _.sample(['red','red','red','redP','redB','blue','blue','blue','blueP','blueB','purple','purple','gray','gray','gray','black']);
       var newCell = ($('<div/>').attr("class","cell"));
       $("#"+thisId).prepend(newCell);
       that.updateID();
@@ -414,8 +585,8 @@ Game.prototype.eventListener = function () {
       console.log("this is the selected cell if2: " + that.selectedCell);
       console.log("counter if2: " + that.clickCounter);
     } else if ($.inArray(($(e.target).parent().attr('id')), that.allowedClicks) != -1) {
-      var newSelectionID = ($(e.target).parent().attr('id'));
-      that.swapGems(newSelectionID);
+      that.secondGem = ($(e.target).parent().attr('id'));
+      that.swapGems();
       $('#'+that.selectedCell).css('background-color','');
       that.checkForMatch();
       that.updateID();
@@ -427,13 +598,24 @@ Game.prototype.eventListener = function () {
   });
 };
 
-Game.prototype.swapGems = function(newSelectionID) {
+Game.prototype.swapGems = function() {
 
-  var content1 = $('#'+newSelectionID).html();
+  this.match = false;
+  var content1 = $('#'+this.secondGem).html();
   var content2 = $('#'+this.selectedCell).html();
-  $('#'+newSelectionID).html(content2);
+  $('#'+this.secondGem).html(content2);
   $('#'+this.selectedCell).html(content1);
+  var tempId1 = $('#'+this.secondGem).attr('id');
+  var tempId2 = $('#'+this.selectedCell).attr('id');
+  setTimeout(function() {
+    if (this.match === false) {
+      $('#'+tempId1).html(content1);
+      $('#'+tempId2).html(content2);
+    }
+  }.bind(this),1200);
+
 };
+
 
 Game.prototype.defineSecondClickRange = function (thisId) {
 
@@ -487,9 +669,27 @@ $(document).ready(function() {
 
   game.drawMainBoard();
   game.createRandomGems();
-  game.eventListener();
+
+
+  $("#start").on("click",function()
+  {
+    var time = 12;
+    var timer = setInterval(function() {
+      time -= 1;
+      $(".timer").text(time);
+      if (time < 11) {
+        $(".timer").addClass('redColor');
+      }
+      if (time === 0) {
+        clearInterval(timer);
+      }
+    },1000);
+    game.eventListener();
+
+  });
+
   window.setInterval(function(){
     game.checkForMatch();
-  }, 1200);
+  }, 900);
 
 });
