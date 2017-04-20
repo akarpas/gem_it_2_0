@@ -41,6 +41,13 @@ body {
   padding-top: 20px;
 }
 
+.disabled {
+  position: absolute;
+  background-color: rgba(0,0,0,0.5);
+  min-width: 500px;
+  min-height: 500px;
+}
+
 .gameboard {
   padding-top: 15px;
   padding-bottom: 5px;
@@ -108,7 +115,7 @@ body {
 
 .timer {
   font-size: 34px;
-  font-weight: 300;
+  font-weight: 500;
   color: gray;
   letter-spacing: 4px;
 }

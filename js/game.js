@@ -12,6 +12,7 @@ function Game(options) {
   this.selectedCell = 0;
   this.match = false;
   this.secondGem = 0;
+
   // var mapGrid = [];
   // _.times(this.rows,function() {
   //   mapGrid.push(_.fill(new Array(this.columns),0));
@@ -202,7 +203,7 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
 
   var that = this;
   var totalScore = 0;
-  var tmpScore = 0;
+  var subScore = 0;
   var matchCounter = 1;
   var hIndex = 1;
   var gemsForRemoval = [];
@@ -233,6 +234,7 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       matchCounter = 0;
       this.match = true;
       this.removeGemsHorizontally(gemsForRemoval,row);
+      totalScore = (Math.ceil(matchCounter / 3))*totalScore;
       // console.log("IF1 this is a test for gems to be removed: " + gemsForRemoval);
     }
 
@@ -505,6 +507,7 @@ Game.prototype.checkMatchVertically = function (row,column) {
 
 Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
 
+  var audio2 = new Audio('./sounds/break.mp3');
   var removalIndex = 0;
   var p1, p2;
   var temp;
@@ -518,11 +521,13 @@ Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
       this.addGems();
     }
   }
+  audio2.play();
   this.updateID();
 };
 
 Game.prototype.removeGemsVertically = function (gemsForRemoval,columnMark) {
 
+  var audio2 = new Audio('./sounds/break.mp3');
   var removalIndex = 0;
   var p1, p2;
   var temp;
@@ -538,6 +543,7 @@ Game.prototype.removeGemsVertically = function (gemsForRemoval,columnMark) {
       this.addGems();
     }
   }
+  audio2.play();
   this.updateID();
 };
 
@@ -664,24 +670,30 @@ $(document).ready(function() {
   var game = new Game({
     rows: 6,
     columns: 8,
-    gems: new Gems()
+    gems: new Gems(),
   });
+
+  var audio1 = new Audio('./sounds/beep.wav');
 
   game.drawMainBoard();
   game.createRandomGems();
 
-
-  $("#start").on("click",function()
-  {
-    var time = 12;
+  $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
+  $("#start").fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400).fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+  $("#start").on("click",function() {
+    $('.gems').css('opacity','1').css('filter', '');
+    var time = 99;
     var timer = setInterval(function() {
       time -= 1;
       $(".timer").text(time);
       if (time < 11) {
         $(".timer").addClass('redColor');
+        audio1.play();
       }
       if (time === 0) {
         clearInterval(timer);
+        $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
+        game.eventListener().off();
       }
     },1000);
     game.eventListener();
