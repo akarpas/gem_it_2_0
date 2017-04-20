@@ -9,8 +9,8 @@ function Game(options) {
   this.score = 0;
   this.allowedClicks = [];
   this.clickCounter = 0;
-  this.match = false;
   this.selectedCell = 0;
+  this.match = false;
   // var mapGrid = [];
   // _.times(this.rows,function() {
   //   mapGrid.push(_.fill(new Array(this.columns),0));
@@ -178,7 +178,6 @@ Game.prototype.createRandomGems = function () {
         } else if (selection === "greenB" && this.gems.bombCounter > 1) {
           selection = 'green';
         }
-        console.log("this is cell id: " + cellId);
         this.gemPicker(selection,cellId);
         // this.checkForMatch();
         // this.updateTheGrid();
@@ -231,6 +230,7 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
     }
     if (matchCounter >= 3) {
       matchCounter = 0;
+      this.match = true;
       this.removeGemsHorizontally(gemsForRemoval,row);
       // console.log("IF1 this is a test for gems to be removed: " + gemsForRemoval);
     }
@@ -254,8 +254,8 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       }
     }
     if (matchCounter >= 3) {
-
       matchCounter = 0;
+      this.match = true;
       this.removeGemsHorizontally(gemsForRemoval,row);
       // console.log("IF2 this is a test for gems to be removed: " + gemsForRemoval);
     }
@@ -297,7 +297,7 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       if (matchCounter >= 3) {
 
         // console.log("IF3 this is a test for gems to be removed: " + gemsForRemoval);
-
+        this.match = true;
       this.removeGemsHorizontally(gemsForRemoval,row);
         matchCounter = 0;
       }
@@ -319,9 +319,7 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
 
       }
       if (matchCounter >= 3) {
-        // this.removeGemsHorizontally(gemsForRemoval,row)
-        // console.log("IF4 this is a test for gems to be removed: " + gemsForRemoval);
-
+        this.removeGemsHorizontally(gemsForRemoval,row);
         this.match = true;
         matchCounter = 0;
       }
@@ -344,11 +342,9 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
       if (matchCounter >= 3) {
         totalScore = tmpScore;
         totalScore = (Math.ceil(matchCounter / 3))*totalScore;
-        // this.score += totalScore;
+        this.match = true;      
         this.removeGemsHorizontally(gemsForRemoval,row);
         matchCounter = 0;
-        // console.log("IF5 this is a test for gems to be removed: " + gemsForRemoval);
-
 
       }
     }
@@ -381,7 +377,6 @@ Game.prototype.addGems = function () {
   var gemCounter = 0;
   $(".col-md-1").each(function(index1,collumn){
     var thisId = $(collumn).attr('id');
-    console.log(thisId);
     $(collumn).children().each(function(index2,theCell) {
       gemCounter++;
     });
@@ -390,7 +385,6 @@ Game.prototype.addGems = function () {
       var newCell = ($('<div/>').attr("class","cell"));
       $("#"+thisId).prepend(newCell);
       that.updateID();
-      console.log("this is the second cell Id: "+ newCell.attr('id'));
       that.gemPicker(selection,newCell.attr('id'));
     }
   gemCounter=0;
@@ -404,18 +398,21 @@ Game.prototype.eventListener = function () {
   var cellSelected = false;
 
   $('.col-md-1').on('click', function(e) {
-    if (that.selectedCell === 0 || that.clickCounter === 0) {
+    console.log("this is the selected cell out of if: " + that.selectedCell);
+    console.log("counter out of if: " + that.clickCounter);
+    if (that.selectedCell === 0 && that.clickCounter === 0) {
       $(e.target).parent().css('background-color','rgb(242, 206, 50)');
       that.selectedCell = $(e.target).parent().attr('id');
-      console.log("this is the target: " + $(e.target).parent().attr('id'));
       that.defineSecondClickRange(that.selectedCell);
-      console.log("this is the selected cell: " + that.selectedCell);
       that.clickCounter = 1; // ISSUE HERE - SECOND TIME CELL DOES NOT HIGHLIGHT
+      console.log("this is the selected cell if1: " + that.selectedCell);
+      console.log("counter if1: " + that.clickCounter);
     } else if (that.selectedCell === $(e.target).parent().attr('id') && that.clickCounter === 1 ) {
       $(e.target).parent().css('background-color','');
       that.clickCounter = 0;
       that.selectedCell = 0;
-      that.eventListener();
+      console.log("this is the selected cell if2: " + that.selectedCell);
+      console.log("counter if2: " + that.clickCounter);
     } else if ($.inArray(($(e.target).parent().attr('id')), that.allowedClicks) != -1) {
       var newSelectionID = ($(e.target).parent().attr('id'));
       that.swapGems(newSelectionID);
@@ -423,10 +420,10 @@ Game.prototype.eventListener = function () {
       that.checkForMatch();
       that.updateID();
       that.clickCounter = 0;
+      console.log("this is the selected cell if3: " + that.selectedCell);
+      console.log("counter if3: " + that.clickCounter);
       that.selectedCell = 0;
-      that.eventListener();
     }
-
   });
 };
 
@@ -434,12 +431,8 @@ Game.prototype.swapGems = function(newSelectionID) {
 
   var content1 = $('#'+newSelectionID).html();
   var content2 = $('#'+this.selectedCell).html();
-  console.log("test: "+this.selectedCell);
   $('#'+newSelectionID).html(content2);
   $('#'+this.selectedCell).html(content1);
-  console.log("test: "+this.selectedCell);
-
-
 };
 
 Game.prototype.defineSecondClickRange = function (thisId) {
