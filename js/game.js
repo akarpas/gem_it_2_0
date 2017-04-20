@@ -14,12 +14,6 @@ function Game(options) {
   this.secondGem = 0;
   this.timer = 0;
   this.time = 60;
-
-  // var mapGrid = [];
-  // _.times(this.rows,function() {
-  //   mapGrid.push(_.fill(new Array(this.columns),0));
-  // });
-  // this.mapGrid = mapGrid;
 }
 
 Game.prototype.drawMainBoard = function () {
@@ -597,7 +591,7 @@ Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
     $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
     $('.col-md-1').off('click');
     $('.gameboard').append("<div class='gameover'><strong>Game Over!</strong><br> You Crashed 3 or More Black Gems!!!<br>");
-    clearInterval(this.timer);
+    clearInterval(that.timer);
   }
 
   for (rowMark; rowMark > -1; rowMark--) {
@@ -842,6 +836,8 @@ $(document).ready(function() {
   $("#start").on("click",function() {
     $('.gems').css('opacity','1').css('filter', '');
     $('.gameover').remove();
+    window.clearInterval(game.timer);
+    game.time = 60;
     game.timer = setInterval(function() {
       game.time -= 1;
       $(".timer").text(game.time);
