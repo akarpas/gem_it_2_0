@@ -12,6 +12,8 @@ function Game(options) {
   this.selectedCell = 0;
   this.match = false;
   this.secondGem = 0;
+  this.timer = 0;
+  this.time = 60;
 
   // var mapGrid = [];
   // _.times(this.rows,function() {
@@ -154,7 +156,7 @@ Game.prototype.createRandomGems = function () {
       if (this.columnIndex === 0 || 2 || 4 || 6) {
         if (this.rowIndex === 0 || this.rowIndex === 2 || this.rowIndex === 5) {
           selection = _.sample(['red','redP','redB','blue','blueP','blueB','gray','gray','gray','black']);
-          if (selection === "black" && this.gems.blackCounter > 1) {
+          if (selection === "black" && this.gems.blackCounter > 0) {
             selection = _.sample(['red','redP','redB','blue','blueP','blueB','gray','gray']);
           }
           }
@@ -162,7 +164,7 @@ Game.prototype.createRandomGems = function () {
       if (this.columnIndex === 1 || 3 || 5 || 7) {
         if (this.rowIndex === 1 || this.rowIndex === 3) {
           selection = _.sample(['green','greenB', 'greenP','purple','purple','black']);
-          if (selection === "black" && this.gems.blackCounter > 1) {
+          if (selection === "black" && this.gems.blackCounter > 0) {
             selection = _.sample(['green','purple','purple']);
           }
         }
@@ -571,6 +573,7 @@ Game.prototype.checkMatchVertically = function (row,column) {
 
 Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
 
+  var that = this;
   var audio2 = new Audio('./sounds/break.mp3');
   var removalIndex = 0;
   var p1, p2;
@@ -578,9 +581,29 @@ Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
   var arrayMemory = [];
   var arrayKeep = [];
   var tmpScore = 0;
+  var blackCounter = 0;
+  var tempBlack;
+
+  for (var i = 0; i < 3; i++) {
+    tempBlack = gemsForRemoval[i];
+    console.log("this is the tempBlack: "+ tempBlack);
+    console.log("this is the type of the black gems: " + $('#'+tempBlack).children().attr('data-type'));
+    if ($('#'+tempBlack).children().attr('data-type') === 'black') {
+      blackCounter++;
+    }
+  }
+
+  if (blackCounter >= 3) {
+    $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
+    $('.col-md-1').off('click');
+    $('.gameboard').append("<div class='gameover'><strong>Game Over!</strong><br> You Crashed 3 or More Black Gems!!!<br>");
+    clearInterval(this.timer);
+  }
+
   for (rowMark; rowMark > -1; rowMark--) {
     for (removalIndex; removalIndex<gemsForRemoval.length; removalIndex++) {
       temp = gemsForRemoval[removalIndex];
+      this.checkGemType(temp);
       $('#'+temp).remove();
       this.addGems();
     }
@@ -597,12 +620,30 @@ Game.prototype.removeGemsVertically = function (gemsForRemoval,columnMark) {
   var temp;
   var sorted = [];
   var tmpScore = 0;
+  var blackCounter = 0;
+  var tempBlack;
 
   gemsForRemoval.sort();
+
+  for (var i = 0; i < 3; i++) {
+    tempBlack = gemsForRemoval[i];
+    console.log("this is the tempBlack: "+ tempBlack);
+    console.log("this is the type of the black gems: " + $('#'+tempBlack).children().attr('data-type'));
+    if ($('#'+tempBlack).children().attr('data-type') === 'black') {
+      blackCounter++;
+    }
+  }
+
+  if (blackCounter >= 3) {
+    $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
+    $('.col-md-1').off('click');
+    $('.gameboard').append("<div class='gameover'><strong>Game Over!</strong><br> You Crashed 3 or More Black Gems!!!<br>");
+  }
 
   for (columnMark; columnMark > -1; columnMark--) {
     for (removalIndex; removalIndex<gemsForRemoval.length; removalIndex++) {
       temp = gemsForRemoval[removalIndex];
+      this.checkGemType(temp);
       $('#'+temp).remove();
       this.addGems();
     }
@@ -611,6 +652,52 @@ Game.prototype.removeGemsVertically = function (gemsForRemoval,columnMark) {
   this.updateID();
 };
 
+Game.prototype.checkGemType = function (temp) {
+
+  var that = this;
+  var type = $('#'+temp).children().attr('data-type');
+  var color = $('#'+temp).children().attr('id');
+  color = Number(color);
+
+  if (type === 'bomb') {
+    if (color === 1) {
+      $(".cell").each(function(index,cell){
+        if ($(cell).children().attr('id') === '1') {
+          that.score += Number($(this).children().attr('data-score'));
+          $(cell).remove();
+          that.addGems();
+          that.updateID();
+        }
+      });
+    }
+    if (color === 2) {
+      $(".cell").each(function(index,cell){
+        if ($(cell).children().attr('id') === '2') {
+          that.score += Number($(this).children().attr('data-score'));
+          $(cell).remove();
+          that.addGems();
+          that.updateID();
+        }
+      });
+    }
+    if (color === 3) {
+      $(".cell").each(function(index,cell){
+        if ($(cell).children().attr('id') === '3') {
+          that.score += Number($(this).children().attr('data-score'));
+          $(cell).remove();
+          that.addGems();
+          that.updateID();
+        }
+      });
+    }
+  }
+  if (type === 'bonus') {
+    that.score += 5000;
+    $(".score").text(this.score);
+    that.time += 3;
+  }
+
+};
 
 Game.prototype.addGems = function () {
 
@@ -622,7 +709,7 @@ Game.prototype.addGems = function () {
       gemCounter++;
     });
     if (gemCounter < that.rows) {
-      var selection = _.sample(['red','red','red','redP','redB','blue','blue','blue','blueP','blueB','purple','purple','gray','gray','gray','black']);
+      var selection = _.sample(['red','red','red','red','redP','redB','blue','blue','blue','blue','blueP','blueB','purple','purple','gray','black','gray','gray']);
       var newCell = ($('<div/>').attr("class","cell"));
       $("#"+thisId).prepend(newCell);
       that.updateID();
@@ -642,6 +729,10 @@ Game.prototype.eventListener = function () {
     console.log("this is the selected cell out of if: " + that.selectedCell);
     console.log("counter out of if: " + that.clickCounter);
     if (that.selectedCell === 0 && that.clickCounter === 0) {
+      if ($(e.target).attr("data-type") === "black") {
+        that.score -= 5000;
+        $(".score").text(that.score);
+      }
       $(e.target).parent().css('background-color','rgb(242, 206, 50)');
       that.selectedCell = $(e.target).parent().attr('id');
       that.defineSecondClickRange(that.selectedCell);
@@ -655,6 +746,10 @@ Game.prototype.eventListener = function () {
       console.log("this is the selected cell if2: " + that.selectedCell);
       console.log("counter if2: " + that.clickCounter);
     } else if ($.inArray(($(e.target).parent().attr('id')), that.allowedClicks) != -1) {
+      if ($(e.target).attr("data-type") === "black") {
+        that.score -= 5000;
+        $(".score").text(that.score);
+      }
       that.secondGem = ($(e.target).parent().attr('id'));
       that.swapGems();
       $('#'+that.selectedCell).css('background-color','');
@@ -747,16 +842,15 @@ $(document).ready(function() {
   $("#start").on("click",function() {
     $('.gems').css('opacity','1').css('filter', '');
     $('.gameover').remove();
-    var time = 99;
-    var timer = setInterval(function() {
-      time -= 1;
-      $(".timer").text(time);
-      if (time < 11) {
+    game.timer = setInterval(function() {
+      game.time -= 1;
+      $(".timer").text(game.time);
+      if (game.time < 11) {
         $(".timer").addClass('redColor');
         audio1.play();
       }
-      if (time === 0) {
-        clearInterval(timer);
+      if (game.time === 0) {
+        clearInterval(game.timer);
         $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
         $('.col-md-1').off('click');
         $('.gameboard').append("<div class='gameover'><strong>Game Over!</strong><br> Your Final Score:<br> <div id=\"finalscore\">0</div></div>");
