@@ -1,13 +1,13 @@
-Welcome to GEMiT
+<h1>Welcome to GEMiT</h1>
 
-This is a much simpler version of the game Candy Crush.
+<h3>This is a much simpler version of the game Candy Crush.</h3>
 
 It was programmed and designed using the following technologies:
 
-Design:
+<strong>Design:</strong>
 1. HTML/CSS
 2. Bootstrap
-Coding:
+<strong>Coding:</strong>
 1. Javascript (used partially Lodash)
 2. JQuery
 
