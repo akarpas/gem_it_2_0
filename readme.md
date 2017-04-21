@@ -7,6 +7,7 @@ It was programmed and designed using the following technologies:
 <strong>Design:</strong>
 1. HTML/CSS
 2. Bootstrap
+<br>
 <strong>Coding:</strong>
 1. Javascript (used partially Lodash)
 2. JQuery
