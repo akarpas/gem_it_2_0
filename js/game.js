@@ -7,6 +7,7 @@ function Game(options) {
   this.rowIndex = 0;
   this.columnIndex = 0;
   this.score = 0;
+  this.scoreBackup = 0;
   this.allowedClicks = [];
   this.clickCounter = 0;
   this.selectedCell = 0;
@@ -14,10 +15,9 @@ function Game(options) {
   this.secondGem = 0;
   this.timer = 0;
   this.time = 60;
-
-  this.scoreBackup = 0;
 }
 
+// First and most important method, to create the needed divs (cells) in the game board.
 Game.prototype.drawMainBoard = function () {
 
 // first for will loop over each column out of 8
@@ -26,11 +26,14 @@ Game.prototype.drawMainBoard = function () {
     for(this.rowIndex = 0; this.rowIndex < this.rows; this.rowIndex++) {
       $("#col"+this.columnIndex).append($('<div>')
         .addClass("cell")
+// customize ID of each cell with coordinates of row/column to easily locate and identify cell
         .attr('id',this.rowIndex+'-'+this.columnIndex));
       }
     }
 };
 
+// Method to scan the grid, especially when changes are made (i.e. cells removed and added)
+// and update the IDs of each cell to correspond to their locations
 Game.prototype.updateID = function () {
 
   var that = this;
@@ -41,6 +44,9 @@ Game.prototype.updateID = function () {
   });
 };
 
+// Method called when a random gem selection is made, to pick the right image, and set
+// the right attributes for each image tag i.e. ID, Score, Type etc.
+// A switch is used and the image URL is retrieved from the Object Gems
 Game.prototype.gemPicker = function(selection,theCell) {
   var that = this;
   var tempId;
@@ -139,6 +145,10 @@ Game.prototype.gemPicker = function(selection,theCell) {
   }
 };
 
+// Method which is called after the grid is created, to create a random selection of gems
+// to fill up the grid. It has to satisfy a few criteria, including:
+// 1 - no more that 2 gems of the same color next to each other
+// 2 - set a limit on the black gems, the prize gems and the bonus gems
 Game.prototype.createRandomGems = function () {
 
   this.rowIndex = 0;
@@ -187,6 +197,8 @@ Game.prototype.createRandomGems = function () {
   }.bind(this));
 };
 
+// Most important method: scan grid cell by cell, horizontally and vertically for matches
+// Calls two additional methods through a for loop
 Game.prototype.checkForMatch = function () {
 
   for (var row = 0; row<this.rows; row++){
@@ -199,6 +211,8 @@ Game.prototype.checkForMatch = function () {
   }
 };
 
+// Method with a multitude of IF consitions to check table horizontally for matches
+// of more than two colors
 Game.prototype.checkMatchHorizontally = function (row,column) {
 
   var that = this;
@@ -378,6 +392,8 @@ Game.prototype.checkMatchHorizontally = function (row,column) {
     }
 };
 
+// Method with a multitude of IF consitions to check table vertically for matches
+// of more than two colors
 Game.prototype.checkMatchVertically = function (row,column) {
 
   var that = this;
@@ -556,6 +572,8 @@ Game.prototype.checkMatchVertically = function (row,column) {
     totalScore = 0;
 };
 
+// Method which is called after the scan horizontally is done, to remove the gems found
+// (their IDs are saved in an array, and then we loop through array to remove and then add a new one)
 Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
 
   var that = this;
@@ -595,6 +613,8 @@ Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
   this.updateID();
 };
 
+// Method which is called after the scan vertically is done, to remove the gems found
+// (their IDs are saved in an array, and then we loop through array to remove and then add a new one)
 Game.prototype.removeGemsVertically = function (gemsForRemoval,columnMark) {
 
   var that = this;
@@ -634,6 +654,8 @@ Game.prototype.removeGemsVertically = function (gemsForRemoval,columnMark) {
   this.updateID();
 };
 
+// Some gems have different specifications, meaning penalties or even gameover.
+// This method checks the type of gem and adds, removes score or finishes the game
 Game.prototype.checkGemType = function (temp) {
 
   var that = this;
@@ -682,6 +704,7 @@ Game.prototype.checkGemType = function (temp) {
 
 };
 
+// Specific method to pick a new random gem and add it after one is removed
 Game.prototype.addGems = function () {
 
   var that = this;
@@ -705,6 +728,8 @@ Game.prototype.addGems = function () {
   });
 };
 
+// The event listener. Using a click counter as its main driving force, we check if it is the first
+// or second click, and if the second click is allowed
 Game.prototype.eventListener = function () {
 
   var that = this;
@@ -741,6 +766,7 @@ Game.prototype.eventListener = function () {
   });
 };
 
+// Swap gems on second click, and if there is no match, then return to original positions
 Game.prototype.swapGems = function() {
 
   this.match = false;
@@ -759,7 +785,8 @@ Game.prototype.swapGems = function() {
 
 };
 
-
+// Method used by event listener. Each time a first click is made, it stores the allowed clicks
+// in an array to check on the second click
 Game.prototype.defineSecondClickRange = function (thisId) {
 
   var tempArray = [];
