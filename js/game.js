@@ -14,7 +14,7 @@ function Game(options) {
   this.match = false;
   this.secondGem = 0;
   this.timer = 0;
-  this.time = 60;
+  this.time = 45;
 }
 
 // First and most important method, to create the needed divs (cells) in the game board.
@@ -37,7 +37,7 @@ Game.prototype.drawMainBoard = function () {
 Game.prototype.updateID = function () {
 
   var that = this;
-  $(".col-md-1").each(function(index1,collumn){
+  $(".col-xs-1").each(function(index1,collumn){
     $(collumn).children().each(function(index2,theCell) {
       $(this).attr('id',index2+'-'+index1);
     });
@@ -153,7 +153,7 @@ Game.prototype.createRandomGems = function () {
 
   this.rowIndex = 0;
 
-  $(".col-md-1").children().each(function(index1,theCell){
+  $(".col-xs-1").children().each(function(index1,theCell){
         if (this.rowIndex === this.rows-1) {
           this.rowIndex = 0;
           this.columnIndex++;
@@ -596,7 +596,7 @@ Game.prototype.removeGemsHorizontally = function (gemsForRemoval,rowMark) {
 
   if (blackCounter >= 3) {
     $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
-    $('.col-md-1').off('click');
+    $('.col-xs-1').off('click');
     $('.gameboard').append("<div class='gameover'><strong>Game Over!</strong><br> You Crashed 3 or More Black Gems!!!<br>");
     clearInterval(that.timer);
   }
@@ -638,7 +638,7 @@ Game.prototype.removeGemsVertically = function (gemsForRemoval,columnMark) {
 
   if (blackCounter >= 3) {
     $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
-    $('.col-md-1').off('click');
+    $('.col-xs-1').off('click');
     $('.gameboard').append("<div class='gameover'><strong>Game Over!</strong><br> You Crashed 3 or More Black Gems!!!<br>");
   }
 
@@ -699,7 +699,7 @@ Game.prototype.checkGemType = function (temp) {
   if (type === 'bonus') {
     that.score += 5000;
     $(".score").text(this.score);
-    that.time += 3;
+    that.time += 1;
   }
 
 };
@@ -709,7 +709,7 @@ Game.prototype.addGems = function () {
 
   var that = this;
   var gemCounter = 0;
-  $(".col-md-1").each(function(index1,collumn){
+  $(".col-xs-1").each(function(index1,collumn){
     var thisId = $(collumn).attr('id');
     $(collumn).children().each(function(index2,theCell) {
       gemCounter++;
@@ -736,7 +736,7 @@ Game.prototype.eventListener = function () {
   var allowedSecondClicks;
   var cellSelected = false;
 
-  $('.col-md-1').on('click', function(e) {
+  $('.col-xs-1').on('click', function(e) {
     if (that.selectedCell === 0 && that.clickCounter === 0) {
       if ($(e.target).attr("data-type") === "black") {
         that.score -= 5000;
@@ -842,7 +842,7 @@ $(document).ready(function() {
     $('.gems').css('opacity','1').css('filter', '');
     $('.gameover').remove();
     window.clearInterval(game.timer);
-    game.time = 60;
+    game.time = 45;
     game.timer = setInterval(function() {
       game.time -= 1;
       $(".timer").text(game.time);
@@ -853,7 +853,7 @@ $(document).ready(function() {
       if (game.time === 0) {
         clearInterval(game.timer);
         $('.gems').css('opacity','0.5').css('filter', 'grayscale(100%)');
-        $('.col-md-1').off('click');
+        $('.col-xs-1').off('click');
         $('.gameboard').append("<div class='gameover'><strong>Game Over!</strong><br> Your Final Score:<br> <div id=\"finalscore\">0</div></div>");
         $('#finalscore').text(game.score);
       }

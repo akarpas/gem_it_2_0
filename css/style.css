@@ -13,8 +13,8 @@ body {
   width: 900px;
 }
 
-.grid8 .col-md-1 { width: 72px;}
-.col-md-1 {
+.grid8 .col-xs-1 { width: 72px;}
+.col-xs-1 {
   /*border: 1px solid black;*/
   padding: 0;
   text-align: left;
@@ -101,7 +101,7 @@ body {
 }
 
 .score {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 200;
   color: gray;
   letter-spacing: 4px;
@@ -117,7 +117,7 @@ body {
 .timer {
   font-size: 34px;
   font-weight: 500;
-  color: black;
+  color: gray;
   letter-spacing: 4px;
 }
 
@@ -163,10 +163,10 @@ body {
 .gameover {
   display: block;
   position: absolute;
-  margin-top: -350px;
+  margin-top: -300px;
   width: 560px;
   min-height: 100px;
-  background-color: rgba(218, 216, 189,0.8);
+  background-color: rgba(179, 168, 122,0.9);
   text-align: center;
   border: 3px solid rgb(154, 154, 140);
   border-radius: 10px;
